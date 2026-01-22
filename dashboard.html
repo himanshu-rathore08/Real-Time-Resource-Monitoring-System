@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>System Resource Monitor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        :root {
+            --bg: #020617;
+            --card: #0f172a;
+            --bar-bg: #1e293b;
+            --text: #e5e7eb;
+            --muted: #94a3b8;
+            --green: #22c55e;
+            --yellow: #facc15;
+            --red: #ef4444;
+            --accent: #38bdf8;
+        }
+        
+        .dev-label {
+            font-size: 13px;
+            letter-spacing: 1px;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        .dev-name {
+            display: inline-block;
+        margin-top: 6px;
+        font-size: 16px;
+        font-weight: 600;
+            color: var(--accent);
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .dev-name::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -4px;
+            width: 0%;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .dev-name:hover {
+            transform: translateY(-2px);
+            color: #7dd3fc;
+        }
+
+        .dev-name:hover::after {
+            width: 100%;
+        }
+
+
+        .light {
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --bar-bg: #e5e7eb;
+            --text: #020617;
+            --muted: #475569;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Segoe UI", system-ui, Arial, sans-serif;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        header {
+            position: relative;
+            padding: 25px;
+            border-bottom: 1px solid #1e293b;
+            text-align: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+        }
+
+        .logo-box {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: var(--accent);
+            color: #020617;
+            font-weight: bold;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 26px;
+            color: var(--accent);
+        }
+
+        header p {
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .theme-btn {
+            position: absolute;
+            right: 25px;
+            top: 25px;
+            background: var(--bar-bg);
+            color: var(--text);
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 0 25px rgba(56,189,248,0.05);
+        }
+
+        .card h2 {
+            margin: 0 0 15px 0;
+            font-size: 18px;
+            color: var(--muted);
+        }
+
+        .value {
+            font-size: 34px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .bar {
+            height: 18px;
+            background: var(--bar-bg);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .fill {
+            height: 100%;
+            width: 0%;
+            background: var(--green);
+            transition: width 0.6s ease, background 0.6s ease;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--muted);
+            font-size: 14px;
+            border-top: 1px solid #1e293b;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">
+        <div class="logo-box">ARIT</div>
+        <div>
+            <h1>RealTime System Resource Monitor</h1>
+            <p>Internal Monitoring Dashboard</p>
+        </div>
+    </div>
+
+    <button class="theme-btn" onclick="toggleTheme()">🌙 / ☀️</button>
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <h2>CPU Usage</h2>
+        <div class="value" id="cpuText">--%</div>
+        <div class="bar"><div id="cpuBar" class="fill"></div></div>
+    </div>
+
+    <div class="card">
+        <h2>RAM Usage</h2>
+        <div class="value" id="ramText">--%</div>
+        <div class="bar"><div id="ramBar" class="fill"></div></div>
+    </div>
+
+    <div class="card">
+        <h2>RAM Available</h2>
+        <div class="value" id="ramAvailText">-- GB</div>
+    </div>
+
+    <div class="card">
+        <h2>Disk Usage</h2>
+        <div class="value" id="diskText">--%</div>
+        <div class="bar"><div id="diskBar" class="fill"></div></div>
+    </div>
+
+</div>
+
+<div class="footer">
+    Auto-refresh every 3 seconds • Industry-grade monitoring UI  
+    <br><br>
+
+    <span class="dev-label">Developed By</span>
+    <br>
+
+    <span class="dev-name">Himanshu Rathore</span>
+</div>
+
+<script>
+function setBar(bar, value) {
+    bar.style.width = value + "%";
+
+    if (value < 60) bar.style.background = "#22c55e";
+    else if (value < 80) bar.style.background = "#facc15";
+    else bar.style.background = "#ef4444";
+}
+
+function refreshData() {
+    fetch("/status")
+        .then(res => res.json())
+        .then(data => {
+            const cpu = data.cpu || 0;
+            const ram = data.ram || 0;
+            const disk = data.disk || 0;
+            const ramAvail = data.ram_available || 0;
+
+            document.getElementById("cpuText").innerText = cpu.toFixed(1) + "%";
+            document.getElementById("ramText").innerText = ram.toFixed(1) + "%";
+            document.getElementById("diskText").innerText = disk.toFixed(1) + "%";
+            document.getElementById("ramAvailText").innerText = ramAvail + " GB";
+
+            setBar(document.getElementById("cpuBar"), cpu);
+            setBar(document.getElementById("ramBar"), ram);
+            setBar(document.getElementById("diskBar"), disk);
+        })
+        .catch(err => console.error("API Error:", err));
+}
+
+function toggleTheme() {
+    document.body.classList.toggle("light");
+    localStorage.setItem(
+        "theme",
+        document.body.classList.contains("light") ? "light" : "dark"
+    );
+}
+
+if (localStorage.getItem("theme") === "light") {
+    document.body.classList.add("light");
+}
+
+setInterval(refreshData, 3000);
+refreshData();
+</script>
+
+</body>
+</html>
