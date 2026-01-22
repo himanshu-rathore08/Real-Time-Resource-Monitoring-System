@@ -1,0 +1,40 @@
+RealTime_System_Resource_Monitor/
+│
+├── README.md
+│
+├── docs/
+│   ├── project_overview.md
+│   ├── system_architecture.md
+│   ├── methodology.md
+│   ├── limitations_future_scope.md
+│   └── viva_notes.md
+│
+│
+├── logs/
+│   ├── system_monitor.json
+│      
+│---├── api.py   
+│   
+│
+│---├── main.py
+│   
+│----├── monitoring.py
+│     
+│     
+│── templates/
+│   ├── dashboard.html     
+│     
+│   
+│---├── app_logging/
+│      ├── log_manager.py
+│      
+│    
+│---├──└── monitor_contoller.py
+│   
+│        
+│   
+│---├──└── exception_handler.py
+│   
+│   
+│└── alert_decorators.py
+│
